@@ -1,9 +1,12 @@
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:ionicons/ionicons.dart';
+import 'package:otp_auth/Provider/StateManagement.dart';
 import 'package:otp_auth/contacts.dart';
 import 'package:otp_auth/message/message_screen.dart';
 import 'package:otp_auth/uplodePhoto.dart';
+import 'package:provider/provider.dart';
 
 class userProfile extends StatefulWidget {
   userProfile(this.id, this.name, {Key? key}) : super(key: key);
@@ -186,20 +189,29 @@ class _userProfileState extends State<userProfile> with WidgetsBindingObserver {
                     ],
                   ),
                 ),
-                FutureBuilder(
-                    future: upload.downlordUrl(id),
-                    builder: ((context, snapshot) {
+                StreamBuilder(
+                    stream: FirebaseFirestore.instance
+                        .collection('users')
+                        .doc(id)
+                        .snapshots(),
+                    builder: (BuildContext context, AsyncSnapshot snapshot) {
                       if (snapshot.hasData) {
-                        return CircleAvatar(
-                          backgroundImage:
-                              NetworkImage(snapshot.data!.toString()),
-                          radius: 50,
+                        return ClipRRect(
+                          borderRadius: BorderRadius.circular(150),
+                          child: CachedNetworkImage(
+                            height: 150,
+                            width: 150,
+                            imageUrl: snapshot.data['url'],
+                            placeholder: (context, url) =>
+                                const CircularProgressIndicator(),
+                            errorWidget: (context, url, error) =>
+                                const Icon(Icons.error),
+                          ),
                         );
+                      } else {
+                        return const CircularProgressIndicator.adaptive();
                       }
-                      return CircularProgressIndicator(
-                        strokeWidth: 1,
-                      );
-                    })),
+                    }),
                 const SizedBox(height: 10),
                 Text(name,
                     style: const TextStyle(color: Colors.white, fontSize: 20)),

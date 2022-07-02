@@ -67,7 +67,7 @@ void main() async {
     providers: [
       ChangeNotifierProvider<StateManagement>(create: (_) => StateManagement())
     ],
-    child: MaterialApp(
+    child: const MaterialApp(
       debugShowCheckedModeBanner: false,
       home: MyApp(),
     ),

@@ -5,6 +5,7 @@ import 'package:otp_auth/Provider/StateManagement.dart';
 import 'package:otp_auth/contacts.dart';
 import 'package:otp_auth/message/searchBarForMessages.dart';
 import 'package:otp_auth/message/userProfile.dart';
+import 'package:otp_auth/uplodePhoto.dart';
 import 'package:provider/provider.dart';
 import 'message.dart';
 import 'dart:async';
@@ -41,6 +42,7 @@ class _message_screenState extends State<message_screen>
 
   @override
   void initState() {
+    uploadPhoto upload = uploadPhoto();
     super.initState();
     setOnlineStatus();
     WidgetsBinding.instance.addObserver(this);
@@ -48,6 +50,8 @@ class _message_screenState extends State<message_screen>
 
     _connectivitySubscription =
         _connectivity.onConnectivityChanged.listen(_updateConnectionStatus);
+    Future<String> url = upload.downlordUrl(id);
+    url.then((value) => print(value));
   }
 
   @override
@@ -73,6 +77,8 @@ class _message_screenState extends State<message_screen>
       FirebaseFirestore.instance.collection('users').doc(id).update(data);
     }
   }
+
+  Future<void> getPicUrl() async {}
 
   Future<void> initConnectivity() async {
     late ConnectivityResult result;

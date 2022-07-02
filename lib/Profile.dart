@@ -24,6 +24,7 @@ class _ProfileState extends State<Profile> {
   String phone;
   _ProfileState(this.phone);
   late String _imeiNo;
+  late String imgUrl;
 
   Future getImei() async {
     late String imeiNo = '';
@@ -48,7 +49,8 @@ class _ProfileState extends State<Profile> {
       'id': widget.phone,
       'name': _nameControler.text,
       'number': widget.phone,
-      'created': date
+      'created': date,
+      'url': imgUrl
     };
     var reference =
         FirebaseFirestore.instance.collection("users").doc(widget.phone);
@@ -120,11 +122,15 @@ class _ProfileState extends State<Profile> {
                         var pat = res.files.first.path!;
                         //var nam = res.files.first.name;
 
-                        upload.Upload(pat, phone).then((value) {
+                        await upload.Upload(pat, phone).then((value) {
                           setState(() {
                             picCircular = false;
                           });
                           print("Upload Done");
+                        });
+                        var url = await upload.downlordUrl(phone);
+                        setState(() {
+                          imgUrl = url;
                         });
                       }
                     },
